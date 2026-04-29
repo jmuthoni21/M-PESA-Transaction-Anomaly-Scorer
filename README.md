@@ -2,20 +2,30 @@
 Build a fraud detection model on synthetic M-PESA transaction data. 
 
 
-flowchart LR
-
-    A[Incoming Transaction] --> B[API Endpoint]
-
+```mermaid
+flowchart TD
+    A[Transaction Data Generator] --> B[Transactions Dataset]
     B --> C[Feature Engineering]
-    C --> D[Behavioral Features]
+    C --> D[Train/Test Split]
+    D --> E[SMOTE Balancing]
+    E --> F[Random Forest Model Training]
+    F --> G[Trained Model + Feature Schema]
+    G --> H[FastAPI Service]
 
-    D --> E[Random Forest Model]
-    E --> F[Fraud Probability]
+    subgraph API Layer
+        H --> I[Feature Builder]
+        I --> J[Model Inference]
+        J --> K[Fraud Probability]
+        J --> L[SHAP Explainer]
+        L --> M[Top Contributing Factors]
+    end
 
-    D --> G[SHAP Explainer]
-    G --> H[Top Risk Factors]
+    subgraph Frontend
+        N[Streamlit UI] --> H
+        H --> N
+    end
 
-    F --> I[Decision Layer]
-    H --> I
-
-    I --> J[Streamlit Dashboard]
+    K --> O[Fraud Score Output]
+    M --> O
+    O --> N
+```
