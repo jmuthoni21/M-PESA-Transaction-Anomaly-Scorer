@@ -130,7 +130,7 @@ plt.savefig('models/feature_importance.png', dpi=150)
 print("\nSaved feature_importance.png")
 
 # ── 10. Save artifacts ───────────────────────
-joblib.dump(model, 'models/fraud_model.pkl')
-joblib.dump(feature_cols, 'models/feature_columns.pkl')
+joblib.dump(model, 'ml/fraud_model.pkl')
+joblib.dump(feature_cols, 'ml/feature_columns.pkl')
 
 print("Model and feature columns saved")
