@@ -13,12 +13,14 @@ def generate_mpesa_data(n_transactions=10000, n_users=2000):
     n_fraud = n_transactions - n_legit
 
     # --- Legitimate transactions ---
-    legit_hours_list = list(range(7, 21))
+    legit_hours_list = list(range(7, 21))  # 7AM → 8PM (14 values)
+
+    # FIX: match probability length (14 values)
     legit_probs = np.array([
-        0.03, 0.06, 0.09, 0.1, 0.1, 0.1, 0.1,
-        0.09, 0.09, 0.08, 0.08, 0.07, 0.06, 0.05
+        0.03, 0.05, 0.07, 0.09, 0.10, 0.11, 0.11,
+        0.10, 0.09, 0.08, 0.07, 0.05, 0.03, 0.02
     ])
-    legit_probs = legit_probs / legit_probs.sum()  # normalize
+    legit_probs = legit_probs / legit_probs.sum()
 
     legit_hours = np.random.choice(
         legit_hours_list,
@@ -123,7 +125,7 @@ def generate_mpesa_data(n_transactions=10000, n_users=2000):
     )
 
     # --- Extra ML features ---
-    df['is_night'] = df['hour_of_day'].isin([0,1,2,3,22,23]).astype(int)
+    df['is_night'] = df['hour_of_day'].isin([0, 1, 2, 3, 22, 23]).astype(int)
     df['is_large_tx'] = (df['amount_kes'] > 15000).astype(int)
     df['is_weekend'] = (df['day_of_week'] >= 5).astype(int)
 

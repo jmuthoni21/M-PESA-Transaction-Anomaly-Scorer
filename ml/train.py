@@ -15,24 +15,52 @@ df['timestamp'] = pd.to_datetime(df['timestamp'])
 print("Dataset shape:", df.shape)
 print("Fraud rate:", df['is_fraud'].mean().round(4))
 
-# ── 2. Feature Engineering (minimal — dataset already rich) ──
+# ── 2. Feature Engineering ────────────────────
 df['hour'] = df['timestamp'].dt.hour
 df['day_of_week'] = df['timestamp'].dt.dayofweek
 
-# Handle missing values (important)
-df['time_diff'] = df['time_diff'].fillna(df['time_diff'].median())
+# Derived behavioral signals
+df['is_night'] = ((df['hour'] >= 22) | (df['hour'] <= 5)).astype(int)
+df['is_weekend'] = (df['day_of_week'] >= 5).astype(int)
 
-# Log transform for stability
+# Transaction characteristics
 df['log_amount'] = np.log1p(df['amount_kes'])
+df['is_large_tx'] = (df['amount_kes'] > 30000).astype(int)
 
-# Optional: cap extreme deviations (prevents crazy values dominating)
+# Ensure required columns exist (important if synthetic data is incomplete)
+if 'user_avg_amount' not in df.columns:
+    df['user_avg_amount'] = df['amount_kes'].rolling(5, min_periods=1).mean()
+
+if 'time_diff' not in df.columns:
+    df['time_diff'] = df['timestamp'].diff().dt.total_seconds().fillna(0)
+
+# Clean missing values
+df['time_diff'] = df['time_diff'].fillna(df['time_diff'].median())
+df['user_avg_amount'] = df['user_avg_amount'].fillna(df['user_avg_amount'].median())
+
+# Deviation feature (very important signal)
+df['amount_deviation'] = df['amount_kes'] / (df['user_avg_amount'] + 1)
 df['amount_deviation'] = df['amount_deviation'].clip(0, 10)
 
 # ── 3. Encode categorical features ────────────
-df = pd.get_dummies(df, columns=['transaction_type'], drop_first=True)
 
-# ── 4. Feature selection ──────────────────────
-feature_cols = [
+df['transaction_type'] = df['transaction_type'].astype(str)
+
+transaction_types = [
+    'send_money',
+    'paybill',
+    'buy_goods',
+    'withdraw',
+    'deposit'
+]
+
+df['transaction_type'] = pd.Categorical(
+    df['transaction_type'],
+    categories=transaction_types
+)
+
+df = pd.get_dummies(df, columns=['transaction_type'], prefix='transaction_type')
+base_features = [
     'amount_kes',
     'log_amount',
     'hour',
@@ -43,7 +71,11 @@ feature_cols = [
     'user_avg_amount',
     'amount_deviation',
     'time_diff'
-] + [col for col in df.columns if col.startswith('transaction_type_')]
+]
+
+tx_features = [f'transaction_type_{t}' for t in transaction_types]
+
+feature_cols = base_features + tx_features
 
 X = df[feature_cols]
 y = df['is_fraud']
@@ -53,10 +85,9 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
-print(
-    f"\nTraining set: {X_train.shape[0]} rows | Test set: {X_test.shape[0]} rows")
+print(f"\nTraining set: {X_train.shape[0]} rows | Test set: {X_test.shape[0]} rows")
 
-# ── 6. SMOTE (only on training set) ───────────
+# ── 6. SMOTE ─────────────────────────────────
 smote = SMOTE(random_state=42, sampling_strategy=0.3)
 X_train_bal, y_train_bal = smote.fit_resample(X_train, y_train)
 
@@ -94,12 +125,12 @@ plt.figure(figsize=(10, 6))
 sns.barplot(x=importances.values, y=importances.index)
 plt.title('Feature Importance — M-PESA Fraud Model')
 plt.tight_layout()
-plt.savefig('feature_importance.png', dpi=150)
+plt.savefig('models/feature_importance.png', dpi=150)
 
 print("\nSaved feature_importance.png")
 
 # ── 10. Save artifacts ───────────────────────
-joblib.dump(model, 'fraud_model.pkl')
-joblib.dump(feature_cols, 'feature_columns.pkl')
+joblib.dump(model, 'models/fraud_model.pkl')
+joblib.dump(feature_cols, 'models/feature_columns.pkl')
 
 print("Model and feature columns saved")
