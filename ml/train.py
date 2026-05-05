@@ -25,7 +25,7 @@ df['is_weekend'] = (df['day_of_week'] >= 5).astype(int)
 
 # Transaction characteristics
 df['log_amount'] = np.log1p(df['amount_kes'])
-df['is_large_tx'] = (df['amount_kes'] > 30000).astype(int)
+df['is_large_tx'] = (df['amount_kes'] > 15000).astype(int)
 
 # Ensure required columns exist (important if synthetic data is incomplete)
 if 'user_avg_amount' not in df.columns:
@@ -125,7 +125,7 @@ plt.figure(figsize=(10, 6))
 sns.barplot(x=importances.values, y=importances.index)
 plt.title('Feature Importance — M-PESA Fraud Model')
 plt.tight_layout()
-plt.savefig('models/feature_importance.png', dpi=150)
+plt.savefig('ml/feature_importance.png', dpi=150)
 
 print("\nSaved feature_importance.png")
 

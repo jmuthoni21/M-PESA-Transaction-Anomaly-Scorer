@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Analysis with Matplotlib | MLlabwithMel</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0a0f2e;
+            --card-bg: #111827;
+            --card-bg-2: #0d1424;
+            --blue: #3b82f6;
+            --gold: #f59e0b;
+            --red: #ef4444;
+            --green: #10b981;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --code-bg: #1e293b;
+            --code-text: #38bdf8;
+            --border: #1e2d4a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            line-height: 1.75;
+            scroll-behavior: smooth;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: linear-gradient(135deg, #0d1631 0%, #1a2a5e 100%);
+            border-bottom: 2px solid var(--blue);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+        }
+
+        .brand {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            color: var(--gold);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            color: #fff;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        header h1 span {
+            color: var(--blue);
+        }
+
+        .tagline {
+            color: var(--muted);
+            font-size: 1rem;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .pill-row {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.25rem;
+        }
+
+        .pill {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            color: var(--blue);
+            font-size: 0.78rem;
+            font-family: 'DM Mono', monospace;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+        }
+
+        /* ── PROGRESS BAR ── */
+        .progress-bar-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0.6rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .progress-bar-wrap::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-step {
+            white-space: nowrap;
+            font-size: 0.78rem;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .nav-step:hover,
+        .nav-step.active {
+            color: var(--blue);
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        /* ── MAIN LAYOUT ── */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 1.25rem 4rem;
+        }
+
+        /* ── SECTIONS ── */
+        section {
+            margin-bottom: 3.5rem;
+            padding-top: 1rem;
+        }
+
+        section h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.4rem, 3.5vw, 1.85rem);
+            color: #fff;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        section h2 .num {
+            color: var(--blue);
+            margin-right: 0.4rem;
+        }
+
+        section h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.15rem;
+            color: var(--gold);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul,
+        ol {
+            padding-left: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.4rem;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 0.8rem 1.2rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .card-header::after {
+            content: '▾';
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .card.open .card-header::after {
+            transform: rotate(-180deg);
+        }
+
+        .card-body {
+            padding: 1.2rem 1.4rem;
+            display: none;
+            font-size: 0.97rem;
+            line-height: 1.8;
+        }
+
+        .card.open .card-body {
+            display: block;
+        }
+
+        /* Card colour themes */
+        .slowdown-card {
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .slowdown-card .card-header {
+            background: rgba(239, 68, 68, 0.12);
+            color: #fca5a5;
+        }
+
+        .explain-card {
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .explain-card .card-header {
+            background: rgba(59, 130, 246, 0.12);
+            color: #93c5fd;
+        }
+
+        .analogy-card {
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .analogy-card .card-header {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fcd34d;
+        }
+
+        /* ── CODE BLOCKS ── */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid #2d3f5c;
+            border-radius: 8px;
+            margin: 1.25rem 0;
+            overflow: hidden;
+        }
+
+        .code-label {
+            background: #1a2540;
+            padding: 0.4rem 1rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2d3f5c;
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            color: var(--blue);
+            font-size: 0.72rem;
+            font-family: 'DM Mono', monospace;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        pre {
+            padding: 1.1rem 1.25rem;
+            overflow-x: auto;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.65;
+            color: var(--code-text);
+            white-space: pre;
+        }
+
+        /* syntax colours */
+        .kw {
+            color: #c084fc;
+        }
+
+        .fn {
+            color: #22d3ee;
+        }
+
+        .str {
+            color: #86efac;
+        }
+
+        .cm {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .num {
+            color: #fb923c;
+        }
+
+        /* ── TABLE ── */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            margin: 1.25rem 0;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: #1a2540;
+            color: var(--blue);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.78rem;
+            padding: 0.6rem 0.9rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 0.55rem 0.9rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.82rem;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* ── CALLOUT BOX ── */
+        .callout {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 3px solid var(--green);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+            font-size: 0.95rem;
+        }
+
+        .callout strong {
+            color: var(--green);
+        }
+
+        /* ── STEP TRACKER ── */
+        .steps-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-chip {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-family: 'DM Mono', monospace;
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .step-chip input[type=checkbox] {
+            accent-color: var(--blue);
+        }
+
+        /* ── PRACTICE BOX ── */
+        .practice {
+            background: var(--card-bg-2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 1.4rem 1.6rem;
+            margin: 1.5rem 0;
+        }
+
+        .practice h4 {
+            font-family: 'Syne', sans-serif;
+            color: var(--gold);
+            margin-bottom: 0.75rem;
+        }
+
+        .practice ol {
+            color: var(--text);
+        }
+
+        /* ── CHART PLACEHOLDER ── */
+        .chart-placeholder {
+            background: var(--code-bg);
+            border: 1px dashed rgba(59, 130, 246, 0.35);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.85rem;
+            margin: 1.25rem 0;
+        }
+
+        .chart-placeholder .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 2rem 1.5rem;
+            color: var(--muted);
+            font-size: 0.875rem;
+        }
+
+        footer strong {
+            color: var(--gold);
+        }
+
+        /* ── UTILS ── */
+        .highlight {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .blue {
+            color: var(--blue);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.78rem;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-family: 'Syne', sans-serif;
+            color: var(--blue);
+            margin: 0.2rem 0;
+        }
+
+        .stat-card .desc {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════ HEADER ══════════════════════════════ -->
+    <header>
+        <div class="brand">MLlabwithMel</div>
+        <h1>Data Analysis with <span>Matplotlib</span></h1>
+        <p class="tagline">Visualise real M-Pesa transaction data — from your first bar chart to fraud pattern
+            detection.</p>
+        <div class="pill-row">
+            <span class="pill">Python</span>
+            <span class="pill">Matplotlib</span>
+            <span class="pill">Pandas</span>
+            <span class="pill">Beginner-friendly</span>
+            <span class="pill">Real dataset</span>
+        </div>
+    </header>
+
+    <!-- ══════════════════════════════ STICKY NAV ══════════════════════════════ -->
+    <nav class="progress-bar-wrap">
+        <a class="nav-step" href="#s0">Setup</a>
+        <a class="nav-step" href="#s1">📊 What is Matplotlib?</a>
+        <a class="nav-step" href="#s2">🗂 The Dataset</a>
+        <a class="nav-step" href="#s3">📈 Bar Charts</a>
+        <a class="nav-step" href="#s4">📉 Histograms</a>
+        <a class="nav-step" href="#s5">🥧 Pie Charts</a>
+        <a class="nav-step" href="#s6">🔵 Scatter Plots</a>
+        <a class="nav-step" href="#s7">📆 Line Charts</a>
+        <a class="nav-step" href="#s8">🕵️ Fraud Patterns</a>
+        <a class="nav-step" href="#s9">🧩 Subplots</a>
+        <a class="nav-step" href="#s10">✅ Practice</a>
+    </nav>
+
+    <main>
+
+        <!-- ══════════════════════════════ SECTION 0 — SETUP ══════════════════════════════ -->
+        <section id="s0">
+            <h2><span class="num">00.</span> Before You Start — Install What You Need</h2>
+
+            <p>We're going to run all our code inside a <strong>Jupyter Notebook</strong>. If you already have Jupyter,
+                Pandas, and Matplotlib installed, skip ahead to Section 01. If not, here's what to do.</p>
+
+            <div class="code-block">
+                <div class="code-label">🟢 Run in Terminal<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Install the three libraries we'll use today</span>
+pip install matplotlib pandas notebook</pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">🟢 Then start Jupyter<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre>jupyter notebook</pre>
+            </div>
+
+            <p>A browser window will open. Click <strong>New → Python 3</strong> to create a new notebook. That's your
+                workspace for today.</p>
+
+            <div class="callout">
+                <strong>💾 Save the dataset</strong> — download <code>transactions.csv</code> and place it in the same
+                folder where your Jupyter notebook lives. That way, when we load it with Pandas, Python can find it.
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 1 — WHAT IS MATPLOTLIB ══════════════════════════════ -->
+        <section id="s1">
+            <h2><span class="num">01.</span> What is Matplotlib?</h2>
+
+            <div class="card analogy-card open">
+                <div class="card-header" onclick="toggleCard(this)">🔁 Think of it like this...</div>
+                <div class="card-body">
+                    Imagine you have a spreadsheet full of numbers — transactions, amounts, dates. You <em>can</em> read
+                    every row manually, but it would take hours and you'd probably miss the big picture.<br><br>
+                    Matplotlib is like <strong>turning that spreadsheet into a poster</strong>. Instead of staring at
+                    numbers, you see patterns — a spike in fraud at midnight, a bar chart showing which transaction type
+                    happens most, a scatter plot showing that large withdrawals at night look very different from
+                    regular ones.<br><br>
+                    Matplotlib draws those posters for you. You describe what you want in code, and it renders it as a
+                    chart.
+                </div>
+            </div>
+
+            <p>In technical terms: <span class="highlight">Matplotlib</span> is Python's most popular library for
+                creating data visualisations. It can produce bar charts, line graphs, histograms, scatter plots, pie
+                charts, heatmaps, and much more — all customisable and exportable as images.</p>
+
+            <div class="card explain-card open">
+                <div class="card-header" onclick="toggleCard(this)">💡 Quick explainer — what's a library?</div>
+                <div class="card-body">
+                    A <strong>library</strong> is a collection of pre-written code that someone else built and packaged
+                    so you don't have to write it yourself. Instead of writing 500 lines to draw a bar chart from
+                    scratch, you just call <code>plt.bar()</code> and Matplotlib handles the rest. Think of it as a
+                    toolbox: you don't build the hammer, you just pick it up and use it.
+                </div>
+            </div>
+
+            <h3>Why does this matter for data work?</h3>
+            <p>Raw numbers are hard to interpret. Charts make patterns visible instantly. This is important for:</p>
+            <ul>
+                <li><strong>Exploratory analysis</strong> — understanding your data before you model it</li>
+                <li><strong>Communicating findings</strong> — showing stakeholders what's happening</li>
+                <li><strong>Detecting anomalies</strong> — fraud, outliers, data quality issues</li>
+                <li><strong>Feature engineering</strong> — in ML, you often create new columns based on patterns you
+                    first spot in a chart</li>
+            </ul>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 2 — THE DATASET ══════════════════════════════ -->
+        <section id="s2">
+            <h2><span class="num">02.</span> Meet the Dataset — M-Pesa Transactions</h2>
+
+            <p>We're working with a <strong>real-world style dataset</strong> of 10,000 mobile money transactions. These
+                are the kinds of transactions you'd see every day on M-Pesa — sending money, buying goods, paying bills,
+                depositing, withdrawing.</p>
+
+            <p>The dataset also includes a column that tells us whether each transaction was flagged as <span
+                    class="highlight">fraudulent</span>. That makes this dataset perfect for visualising both normal
+                patterns and suspicious behaviour.</p>
+
+            <h3>What's in the data?</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>What it means</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>transaction_id</td>
+                        <td>Unique ID for each transaction</td>
+                        <td>TXN0008812</td>
+                    </tr>
+                    <tr>
+                        <td>timestamp</td>
+                        <td>Date and time the transaction happened</td>
+                        <td>2024-02-24 17:00:00</td>
+                    </tr>
+                    <tr>
+                        <td>amount_kes</td>
+                        <td>Amount in Kenyan Shillings</td>
+                        <td>568.16</td>
+                    </tr>
+                    <tr>
+                        <td>hour_of_day</td>
+                        <td>Hour the transaction occurred (0-23)</td>
+                        <td>17</td>
+                    </tr>
+                    <tr>
+                        <td>is_fraud</td>
+                        <td>1 = fraudulent, 0 = normal</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>transaction_type</td>
+                        <td>Type of transaction</td>
+                        <td>withdraw</td>
+                    </tr>
+                    <tr>
+                        <td>day_of_week</td>
+                        <td>Day number (0=Mon, 6=Sun)</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>user_avg_amount</td>
+                        <td>This user's typical transaction amount</td>
+                        <td>3208.33</td>
+                    </tr>
+                    <tr>
+                        <td>amount_deviation</td>
+                        <td>How far this amount is from their average</td>
+                        <td>0.18</td>
+                    </tr>
+                    <tr>
+                        <td>is_night</td>
+                        <td>1 if the transaction happened at night</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>is_large_tx</td>
+                        <td>1 if the amount is unusually large</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>is_weekend</td>
+                        <td>1 if it happened on a weekend</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="grid-2">
+                <div class="stat-card">
+                    <div class="label">total transactions</div>
+                    <div class="value">10,000</div>
+                    <div class="desc">rows in the dataset</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">fraud cases</div>
+                    <div class="value">300</div>
+                    <div class="desc">only 3% — highly imbalanced</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">avg amount</div>
+                    <div class="value">KES 5,450</div>
+                    <div class="desc">mean transaction value</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">max amount</div>
+                    <div class="value">KES 70,000</div>
+                    <div class="desc">the largest single transaction</div>
+                </div>
+            </div>
+
+            <h3>Load the dataset in Python</h3>
+            <p>Every analysis starts here. Run this in your first Jupyter cell:</p>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 1 — Import libraries and load data<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Import the two tools we need</span>
+<span class="cm"># pandas = the tool for loading and manipulating table data</span>
+<span class="cm"># matplotlib.pyplot = the tool for drawing charts</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="cm"># Load the CSV file into a DataFrame</span>
+<span class="cm"># A DataFrame is basically a table — like a spreadsheet inside Python</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">'transactions.csv'</span>)
+
+<span class="cm"># Show the first 5 rows so we can see what we're working with</span>
+df.<span class="fn">head</span>()</pre>
+            </div>
+
+            <div class="card slowdown-card">
+                <div class="card-header" onclick="toggleCard(this)">🚨 Hold on — what does "import as pd" mean?</div>
+                <div class="card-body">
+                    When you write <code>import pandas as pd</code>, you're saying: <em>"Load the pandas library, and
+                        every time I want to use it, let me just type 'pd' instead of 'pandas'."</em><br><br>
+                    It's just a shortcut. Instead of writing <code>pandas.read_csv()</code>, you write
+                    <code>pd.read_csv()</code>. Both work. The shortcut <code>pd</code> for pandas and <code>plt</code>
+                    for matplotlib are the standard conventions — you'll see them in every data science tutorial and job
+                    code worldwide. So use them from the start.
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 2 — Quick overview of the data<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># See how many rows and columns we have</span>
+<span class="fn">print</span>(<span class="str">"Shape:"</span>, df.shape)
+
+<span class="cm"># See the column names and data types</span>
+<span class="fn">print</span>(df.dtypes)
+
+<span class="cm"># See basic stats: mean, min, max, etc.</span>
+df.<span class="fn">describe</span>()</pre>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 3 — BAR CHARTS ══════════════════════════════ -->
+        <section id="s3">
+            <h2><span class="num">03.</span> Your First Chart — Bar Chart of Transaction Types</h2>
+
+            <p>A <span class="highlight">bar chart</span> answers the question: <em>"How many times did each category
+                    appear?"</em></p>
+            <p>In our dataset, there are 5 types of transactions: send_money, buy_goods, paybill, withdraw, and deposit.
+                Let's find out which type happens most often.</p>
+
+            <div class="card analogy-card">
+                <div class="card-header" onclick="toggleCard(this)">🔁 Real world version</div>
+                <div class="card-body">
+                    Imagine you run a small shop and you want to know which product sells most. At the end of the week,
+                    you count how many units of each product you sold and draw a bar for each. The tallest bar = your
+                    best seller. That's a bar chart. We're doing exactly the same thing — but for transaction types.
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 3 — Count and plot transaction types<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Step 1: Count how many times each transaction type appears</span>
+<span class="cm"># value_counts() is a pandas tool — it counts each unique value in a column</span>
+type_counts = df[<span class="str">'transaction_type'</span>].<span class="fn">value_counts</span>()
+
+<span class="cm"># Step 2: Create a figure — think of this as setting up your blank canvas</span>
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">6</span>))  <span class="cm"># width=10 inches, height=6 inches</span>
+
+<span class="cm"># Step 3: Draw the bar chart</span>
+<span class="cm"># type_counts.index = the category names (x-axis labels)</span>
+<span class="cm"># type_counts.values = the counts (bar heights)</span>
+plt.<span class="fn">bar</span>(type_counts.index, type_counts.values, color=<span class="str">'#3b82f6'</span>)
+
+<span class="cm"># Step 4: Add labels so your chart can speak for itself</span>
+plt.<span class="fn">title</span>(<span class="str">'Transaction Volume by Type'</span>, fontsize=<span class="num">14</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Transaction Type'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Number of Transactions'</span>)
+
+<span class="cm"># Step 5: Display the chart</span>
+plt.<span class="fn">tight_layout</span>()  <span class="cm"># prevents labels from getting cut off</span>
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <div class="chart-placeholder">
+                <div class="icon">📊</div>
+                Expected output: A bar chart with 5 bars.<br>
+                <strong>send_money (~3,294)</strong> should be the tallest, followed by <strong>buy_goods
+                    (~2,651)</strong>, <strong>paybill (~2,087)</strong>, <strong>withdraw (~1,286)</strong>, and
+                <strong>deposit (~682)</strong>.
+            </div>
+
+            <h3>Make it more readable — add value labels on top of bars</h3>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 4 — Bar chart with labels on each bar<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># A polished version — with numbers shown on top of each bar</span>
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">6</span>))
+
+bars = plt.<span class="fn">bar</span>(
+    type_counts.index,
+    type_counts.values,
+    color=[<span class="str">'#3b82f6'</span>, <span class="str">'#10b981'</span>, <span class="str">'#f59e0b'</span>, <span class="str">'#ef4444'</span>, <span class="str">'#8b5cf6'</span>]
+)
+
+<span class="cm"># Loop through each bar and write the count on top of it</span>
+<span class="kw">for</span> bar <span class="kw">in</span> bars:
+    height = bar.<span class="fn">get_height</span>()  <span class="cm"># how tall is this bar?</span>
+    plt.text(
+        bar.<span class="fn">get_x</span>() + bar.<span class="fn">get_width</span>() / <span class="num">2</span>,  <span class="cm"># x position: centre of the bar</span>
+        height + <span class="num">20</span>,                           <span class="cm"># y position: just above the bar top</span>
+        <span class="fn">str</span>(<span class="fn">int</span>(height)),                       <span class="cm"># the text to show: the count</span>
+        ha=<span class="str">'center'</span>, fontsize=<span class="num">11</span>
+    )
+
+plt.<span class="fn">title</span>(<span class="str">'Transaction Volume by Type'</span>, fontsize=<span class="num">14</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Transaction Type'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Count'</span>)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <div class="callout">
+                <strong>What you just learned:</strong> <code>plt.bar()</code> draws bars. <code>plt.title()</code>,
+                <code>plt.xlabel()</code>, <code>plt.ylabel()</code> add text labels. <code>plt.show()</code> renders
+                the final chart. These 5 functions are the backbone of almost every chart you'll ever make.
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 4 — HISTOGRAMS ══════════════════════════════ -->
+        <section id="s4">
+            <h2><span class="num">04.</span> Histogram — How Are Transaction Amounts Distributed?</h2>
+
+            <p>A <span class="highlight">histogram</span> answers: <em>"What range of values appears most often?"</em>
+            </p>
+            <p>Where a bar chart counts categories (like "how many withdrawals?"), a histogram groups numbers into
+                ranges and counts how many fall in each range. It shows you the <strong>shape</strong> of your data.</p>
+
+            <div class="card analogy-card">
+                <div class="card-header" onclick="toggleCard(this)">🔁 Here's the everyday version of that</div>
+                <div class="card-body">
+                    Imagine you're a teacher grading 100 tests. You don't want to plot every single score — you want to
+                    know the shape: how many students scored between 0-20, 20-40, 40-60, etc. A histogram groups all
+                    scores into buckets and counts how full each bucket is. That same idea applies here: how many
+                    transactions fell in the KES 0-1000 range? KES 1000-2000? KES 5000+?
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 5 — Histogram of transaction amounts<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># bins=50 means: split the range into 50 equal-width buckets</span>
+<span class="cm"># The more bins, the more detail — but too many looks noisy</span>
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">5</span>))
+
+plt.<span class="fn">hist</span>(df[<span class="str">'amount_kes'</span>], bins=<span class="num">50</span>, color=<span class="str">'#3b82f6'</span>, edgecolor=<span class="str">'white'</span>)
+
+plt.<span class="fn">title</span>(<span class="str">'Distribution of Transaction Amounts (KES)'</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Amount (KES)'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Number of Transactions'</span>)
+
+<span class="cm"># Add a vertical line showing the average amount</span>
+<span class="cm"># This helps us see where "typical" sits relative to the full distribution</span>
+avg_amount = df[<span class="str">'amount_kes'</span>].<span class="fn">mean</span>()
+plt.<span class="fn">axvline</span>(avg_amount, color=<span class="str">'#f59e0b'</span>, linestyle=<span class="str">'--'</span>, label=<span class="fn">f</span><span class="str">'Mean: KES {avg_amount:.0f}'</span>)
+plt.<span class="fn">legend</span>()  <span class="cm"># shows the label next to the mean line</span>
+
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <div class="chart-placeholder">
+                <div class="icon">📉</div>
+                Expected output: A right-skewed distribution.<br>
+                Most transactions cluster at the <strong>lower amounts (under KES 5,000)</strong>, but a long tail
+                extends to the right toward KES 70,000. The mean line (KES ~5,450) sits well to the right of the peak —
+                this is a sign of outliers pulling the average up.
+            </div>
+
+            <div class="card explain-card">
+                <div class="card-header" onclick="toggleCard(this)">💡 What does "right-skewed" mean?</div>
+                <div class="card-body">
+                    <strong>Skewed</strong> means the data is not symmetrical — the distribution is pulled more to one
+                    side. <strong>Right-skewed</strong> (also called positively skewed) means most values are small, but
+                    a few very large values exist, pulling the "tail" to the right.<br><br>
+                    In our case: most people send under KES 5,000, but occasionally someone sends KES 50,000+. Those
+                    high-value outliers are important — in fraud detection, unusually large transactions are a red flag.
+                </div>
+            </div>
+
+            <h3>Zoom in on the most common range</h3>
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 6 — Filter to amounts under KES 20,000 for clarity<button
+                        class="copy-btn" onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Filter to just the transactions under 20,000 KES</span>
+<span class="cm"># This removes extreme outliers so we can see the main pattern more clearly</span>
+df_filtered = df[df[<span class="str">'amount_kes'</span>] &lt; <span class="num">20000</span>]
+
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">5</span>))
+plt.<span class="fn">hist</span>(df_filtered[<span class="str">'amount_kes'</span>], bins=<span class="num">60</span>, color=<span class="str">'#10b981'</span>, edgecolor=<span class="str">'white'</span>)
+plt.<span class="fn">title</span>(<span class="str">'Transaction Amounts Under KES 20,000'</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Amount (KES)'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Count'</span>)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 5 — PIE CHARTS ══════════════════════════════ -->
+        <section id="s5">
+            <h2><span class="num">05.</span> Pie Chart — What Fraction of Transactions are Fraud?</h2>
+
+            <p>A <span class="highlight">pie chart</span> shows how a whole is divided into parts. We use it when we
+                want to emphasise proportions — like the share of fraudulent vs normal transactions.</p>
+
+            <div class="card slowdown-card">
+                <div class="card-header" onclick="toggleCard(this)">🚨 Don't worry — this tripped everyone up the first
+                    time</div>
+                <div class="card-body">
+                    Pie charts get a bad reputation in data science because they can be misleading when there are many
+                    slices. But for a simple 2-part comparison (fraud vs normal), they work perfectly and are easy to
+                    read at a glance. Just avoid using them for more than 4-5 categories — use a bar chart instead for
+                    those cases.
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 7 — Pie chart of fraud vs normal transactions<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Count how many transactions are fraud (1) vs normal (0)</span>
+fraud_counts = df[<span class="str">'is_fraud'</span>].<span class="fn">value_counts</span>()
+
+<span class="cm"># Give them readable labels instead of 0 and 1</span>
+labels = [<span class="str">'Normal'</span>, <span class="str">'Fraudulent'</span>]
+colours = [<span class="str">'#3b82f6'</span>, <span class="str">'#ef4444'</span>]
+
+plt.<span class="fn">figure</span>(figsize=(<span class="num">7</span>, <span class="num">7</span>))
+
+<span class="cm"># explode = "pull out" a slice to highlight it</span>
+<span class="cm"># (0, 0.1) means: don't pull Normal, pull Fraudulent out by 0.1</span>
+plt.<span class="fn">pie</span>(
+    fraud_counts.values,
+    labels=labels,
+    colors=colours,
+    autopct=<span class="str">'%1.1f%%'</span>,   <span class="cm"># show percentage on each slice</span>
+    explode=(<span class="num">0</span>, <span class="num">0.1</span>),   <span class="cm"># highlight the fraud slice</span>
+    startangle=<span class="num">90</span>        <span class="cm"># start at the top of the circle</span>
+)
+
+plt.<span class="fn">title</span>(<span class="str">'Fraud vs Normal Transactions'</span>, fontsize=<span class="num">14</span>)
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <div class="chart-placeholder">
+                <div class="icon">🥧</div>
+                Expected output: A circle divided into two slices.<br>
+                <strong>97.0% Normal</strong> (blue) and <strong>3.0% Fraudulent</strong> (red, pulled out slightly).
+            </div>
+
+            <div class="callout">
+                <strong>Key insight:</strong> The fraud rate is only 3%. This is called a <strong>class
+                    imbalance</strong>. In ML, this creates a real problem — if you train a model on this data, it could
+                predict "normal" for every transaction and still be 97% accurate, while catching zero fraud. Visualising
+                this imbalance early is the first step to handling it properly.
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 6 — SCATTER PLOTS ══════════════════════════════ -->
+        <section id="s6">
+            <h2><span class="num">06.</span> Scatter Plot — Amount vs Deviation from Normal Behaviour</h2>
+
+            <p>A <span class="highlight">scatter plot</span> shows the relationship between two numerical columns. Each
+                dot is one transaction, plotted by its two values. Patterns in the dots reveal relationships — and fraud
+                often shows up as dots in unexpected places.</p>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 8 — Scatter plot: amount vs amount_deviation, coloured by fraud<button
+                        class="copy-btn" onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Separate fraud and normal transactions into two groups</span>
+<span class="cm"># We'll plot them in different colours so we can compare</span>
+normal = df[df[<span class="str">'is_fraud'</span>] == <span class="num">0</span>]
+fraud  = df[df[<span class="str">'is_fraud'</span>] == <span class="num">1</span>]
+
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">6</span>))
+
+<span class="cm"># Plot normal transactions first (blue dots)</span>
+<span class="cm"># alpha = transparency (0=invisible, 1=solid) — helps when dots overlap</span>
+plt.<span class="fn">scatter</span>(
+    normal[<span class="str">'amount_kes'</span>],
+    normal[<span class="str">'amount_deviation'</span>],
+    alpha=<span class="num">0.3</span>, color=<span class="str">'#3b82f6'</span>, s=<span class="num">15</span>, label=<span class="str">'Normal'</span>
+)
+
+<span class="cm"># Plot fraud transactions on top (red dots, slightly larger)</span>
+plt.<span class="fn">scatter</span>(
+    fraud[<span class="str">'amount_kes'</span>],
+    fraud[<span class="str">'amount_deviation'</span>],
+    alpha=<span class="num">0.7</span>, color=<span class="str">'#ef4444'</span>, s=<span class="num">40</span>, label=<span class="str">'Fraud'</span>, marker=<span class="str">'x'</span>
+)
+
+plt.<span class="fn">title</span>(<span class="str">'Transaction Amount vs Deviation (Fraud Highlighted)'</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Amount (KES)'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Amount Deviation (x times user average)'</span>)
+plt.<span class="fn">legend</span>()
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <div class="card explain-card">
+                <div class="card-header" onclick="toggleCard(this)">💡 Let me explain what amount_deviation means</div>
+                <div class="card-body">
+                    Every user has a typical transaction amount — their average. The <code>amount_deviation</code>
+                    column tells you how many times larger (or smaller) this transaction is compared to that
+                    average.<br><br>
+                    An <code>amount_deviation</code> of 1.0 means this transaction is exactly the user's average. A
+                    value of 20 means this transaction is 20x larger than what this person normally does. That's
+                    suspicious. Fraudulent transactions tend to cluster at high deviation values — that's the pattern
+                    we're looking for in the scatter plot.
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 7 — LINE CHARTS ══════════════════════════════ -->
+        <section id="s7">
+            <h2><span class="num">07.</span> Line Chart — Transaction Volume Over Time</h2>
+
+            <p>A <span class="highlight">line chart</span> shows how something changes over time. We'll look at
+                transaction volume month by month to spot seasonal patterns.</p>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 9 — Convert timestamp and plot monthly volume<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Right now, timestamp is just text. We need to convert it to a real date type</span>
+<span class="cm"># pd.to_datetime() tells pandas: "treat this column as actual dates"</span>
+df[<span class="str">'timestamp'</span>] = pd.<span class="fn">to_datetime</span>(df[<span class="str">'timestamp'</span>])
+
+<span class="cm"># Extract just the month from each date</span>
+<span class="cm"># .dt is the "datetime accessor" — it lets you pull parts of a date</span>
+df[<span class="str">'month'</span>] = df[<span class="str">'timestamp'</span>].dt.<span class="fn">to_period</span>(<span class="str">'M'</span>)  <span class="cm"># 'M' = month</span>
+
+<span class="cm"># Count how many transactions happened in each month</span>
+monthly_volume = df.<span class="fn">groupby</span>(<span class="str">'month'</span>).<span class="fn">size</span>()
+
+plt.<span class="fn">figure</span>(figsize=(<span class="num">12</span>, <span class="num">5</span>))
+
+<span class="cm"># Convert month labels to strings so matplotlib can display them properly</span>
+plt.<span class="fn">plot</span>(
+    monthly_volume.index.<span class="fn">astype</span>(<span class="fn">str</span>),
+    monthly_volume.values,
+    color=<span class="str">'#3b82f6'</span>,
+    linewidth=<span class="num">2</span>,
+    marker=<span class="str">'o'</span>,    <span class="cm"># adds a dot at each data point</span>
+    markersize=<span class="num">6</span>
+)
+
+plt.<span class="fn">title</span>(<span class="str">'Monthly Transaction Volume (2024)'</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Month'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Number of Transactions'</span>)
+plt.<span class="fn">xticks</span>(rotation=<span class="num">45</span>)  <span class="cm"># rotate x labels so they don't overlap</span>
+plt.<span class="fn">grid</span>(axis=<span class="str">'y'</span>, alpha=<span class="num">0.3</span>)  <span class="cm"># adds faint horizontal gridlines</span>
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <h3>Compare fraud vs normal over time on the same chart</h3>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 10 — Two lines on one chart<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Count monthly normal transactions</span>
+monthly_normal = df[df[<span class="str">'is_fraud'</span>]==<span class="num">0</span>].<span class="fn">groupby</span>(<span class="str">'month'</span>).<span class="fn">size</span>()
+
+<span class="cm"># Count monthly fraud transactions</span>
+monthly_fraud  = df[df[<span class="str">'is_fraud'</span>]==<span class="num">1</span>].<span class="fn">groupby</span>(<span class="str">'month'</span>).<span class="fn">size</span>()
+
+fig, ax1 = plt.<span class="fn">subplots</span>(figsize=(<span class="num">12</span>, <span class="num">5</span>))
+
+<span class="cm"># Left y-axis: normal transaction counts (blue)</span>
+ax1.<span class="fn">plot</span>(monthly_normal.index.<span class="fn">astype</span>(<span class="fn">str</span>), monthly_normal.values,
+        color=<span class="str">'#3b82f6'</span>, linewidth=<span class="num">2</span>, marker=<span class="str">'o'</span>, label=<span class="str">'Normal'</span>)
+ax1.<span class="fn">set_ylabel</span>(<span class="str">'Normal Transactions'</span>, color=<span class="str">'#3b82f6'</span>)
+
+<span class="cm"># Right y-axis: fraud counts (red) — different scale</span>
+ax2 = ax1.<span class="fn">twinx</span>()  <span class="cm"># twinx() creates a second y-axis sharing the same x-axis</span>
+ax2.<span class="fn">plot</span>(monthly_fraud.index.<span class="fn">astype</span>(<span class="fn">str</span>), monthly_fraud.values,
+        color=<span class="str">'#ef4444'</span>, linewidth=<span class="num">2</span>, marker=<span class="str">'s'</span>, label=<span class="str">'Fraud'</span>)
+ax2.<span class="fn">set_ylabel</span>(<span class="str">'Fraudulent Transactions'</span>, color=<span class="str">'#ef4444'</span>)
+
+plt.<span class="fn">title</span>(<span class="str">'Normal vs Fraudulent Transactions by Month'</span>)
+ax1.<span class="fn">set_xlabel</span>(<span class="str">'Month'</span>)
+plt.<span class="fn">xticks</span>(rotation=<span class="num">45</span>)
+fig.<span class="fn">legend</span>(loc=<span class="str">'upper right'</span>)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 8 — FRAUD PATTERNS ══════════════════════════════ -->
+        <section id="s8">
+            <h2><span class="num">08.</span> Visualising Fraud Patterns — When and How Fraud Happens</h2>
+
+            <p>Now we get to the most interesting part. Fraud doesn't happen randomly — it has patterns. Let's use
+                charts to find them.</p>
+
+            <h3>Pattern 1 — What hour of the day does fraud happen?</h3>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 11 — Fraud by hour of day<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Group by hour, count fraud cases in each hour</span>
+fraud_by_hour = df[df[<span class="str">'is_fraud'</span>]==<span class="num">1</span>].<span class="fn">groupby</span>(<span class="str">'hour_of_day'</span>).<span class="fn">size</span>()
+
+plt.<span class="fn">figure</span>(figsize=(<span class="num">12</span>, <span class="num">5</span>))
+
+plt.<span class="fn">bar</span>(fraud_by_hour.index, fraud_by_hour.values, color=<span class="str">'#ef4444'</span>, alpha=<span class="num">0.85</span>)
+
+<span class="cm"># Highlight the night hours (0-5am) with a shaded region</span>
+plt.<span class="fn">axvspan</span>(<span class="num">0</span>, <span class="num">5.5</span>, alpha=<span class="num">0.1</span>, color=<span class="str">'yellow'</span>, label=<span class="str">'Night (midnight–5am)'</span>)
+
+plt.<span class="fn">title</span>(<span class="str">'Fraud Transactions by Hour of Day'</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Hour (0 = midnight, 12 = noon, 23 = 11pm)'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Number of Fraud Cases'</span>)
+plt.<span class="fn">xticks</span>(<span class="fn">range</span>(<span class="num">0</span>, <span class="num">24</span>))  <span class="cm"># show all 24 hours on the x-axis</span>
+plt.<span class="fn">legend</span>()
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <h3>Pattern 2 — Which transaction type is most targeted?</h3>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 12 — Fraud rate by transaction type<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Calculate the fraud rate for each transaction type</span>
+<span class="cm"># We want: for each type, what % of transactions are fraud?</span>
+fraud_rate = df.<span class="fn">groupby</span>(<span class="str">'transaction_type'</span>)[<span class="str">'is_fraud'</span>].<span class="fn">mean</span>() * <span class="num">100</span>
+fraud_rate = fraud_rate.<span class="fn">sort_values</span>(ascending=<span class="kw">False</span>)
+
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">5</span>))
+
+bars = plt.<span class="fn">bar</span>(fraud_rate.index, fraud_rate.values, color=<span class="str">'#ef4444'</span>)
+
+<span class="cm"># Add a dotted line showing the overall average fraud rate</span>
+plt.<span class="fn">axhline</span>(y=df[<span class="str">'is_fraud'</span>].<span class="fn">mean</span>() * <span class="num">100</span>,
+           color=<span class="str">'#f59e0b'</span>, linestyle=<span class="str">'--'</span>, label=<span class="str">'Overall fraud rate (3%)'</span>)
+
+plt.<span class="fn">title</span>(<span class="str">'Fraud Rate (%) by Transaction Type'</span>)
+plt.<span class="fn">xlabel</span>(<span class="str">'Transaction Type'</span>)
+plt.<span class="fn">ylabel</span>(<span class="str">'Fraud Rate (%)'</span>)
+plt.<span class="fn">legend</span>()
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <div class="callout">
+                <strong>Key insight:</strong> Some transaction types will have fraud rates above the 3% average. That's
+                a signal a feature engineer would use — "is this a high-risk transaction type?" becomes a useful column
+                when building a fraud detection model.
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 9 — SUBPLOTS ══════════════════════════════ -->
+        <section id="s9">
+            <h2><span class="num">09.</span> Subplots — Multiple Charts in One Figure</h2>
+
+            <p>So far we've made one chart at a time. In real projects, you often want a <span
+                    class="highlight">dashboard view</span> — multiple charts displayed together. That's what
+                <code>plt.subplots()</code> is for.</p>
+
+            <div class="card analogy-card">
+                <div class="card-header" onclick="toggleCard(this)">🔁 In plain life terms...</div>
+                <div class="card-body">
+                    Think of a car dashboard. You don't have one giant speedometer taking up the whole panel — you have
+                    speed, RPM, fuel level, and temperature all visible at once in separate sections.
+                    <code>plt.subplots()</code> lets you build that same kind of multi-panel display for your data.
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Cell 13 — A 2x2 dashboard of charts<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># fig = the overall figure (the whole canvas)</span>
+<span class="cm"># axes = a grid of chart positions (2 rows, 2 columns = 4 charts)</span>
+fig, axes = plt.<span class="fn">subplots</span>(<span class="num">2</span>, <span class="num">2</span>, figsize=(<span class="num">14</span>, <span class="num">10</span>))
+
+<span class="cm"># ── Chart 1 (top-left): Transaction type bar chart ──</span>
+type_counts = df[<span class="str">'transaction_type'</span>].<span class="fn">value_counts</span>()
+axes[<span class="num">0</span>, <span class="num">0</span>].<span class="fn">bar</span>(type_counts.index, type_counts.values, color=<span class="str">'#3b82f6'</span>)
+axes[<span class="num">0</span>, <span class="num">0</span>].<span class="fn">set_title</span>(<span class="str">'Transaction Types'</span>)
+axes[<span class="num">0</span>, <span class="num">0</span>].<span class="fn">set_ylabel</span>(<span class="str">'Count'</span>)
+
+<span class="cm"># ── Chart 2 (top-right): Amount histogram ──</span>
+axes[<span class="num">0</span>, <span class="num">1</span>].<span class="fn">hist</span>(df[<span class="str">'amount_kes'</span>], bins=<span class="num">40</span>, color=<span class="str">'#10b981'</span>, edgecolor=<span class="str">'white'</span>)
+axes[<span class="num">0</span>, <span class="num">1</span>].<span class="fn">set_title</span>(<span class="str">'Amount Distribution'</span>)
+axes[<span class="num">0</span>, <span class="num">1</span>].<span class="fn">set_xlabel</span>(<span class="str">'KES'</span>)
+
+<span class="cm"># ── Chart 3 (bottom-left): Fraud by hour ──</span>
+fraud_by_hour = df[df[<span class="str">'is_fraud'</span>]==<span class="num">1</span>].<span class="fn">groupby</span>(<span class="str">'hour_of_day'</span>).<span class="fn">size</span>()
+axes[<span class="num">1</span>, <span class="num">0</span>].<span class="fn">bar</span>(fraud_by_hour.index, fraud_by_hour.values, color=<span class="str">'#ef4444'</span>)
+axes[<span class="num">1</span>, <span class="num">0</span>].<span class="fn">set_title</span>(<span class="str">'Fraud by Hour of Day'</span>)
+axes[<span class="num">1</span>, <span class="num">0</span>].<span class="fn">set_xlabel</span>(<span class="str">'Hour'</span>)
+
+<span class="cm"># ── Chart 4 (bottom-right): Fraud rate by type ──</span>
+fraud_rate = df.<span class="fn">groupby</span>(<span class="str">'transaction_type'</span>)[<span class="str">'is_fraud'</span>].<span class="fn">mean</span>() * <span class="num">100</span>
+axes[<span class="num">1</span>, <span class="num">1</span>].<span class="fn">bar</span>(fraud_rate.index, fraud_rate.values, color=<span class="str">'#8b5cf6'</span>)
+axes[<span class="num">1</span>, <span class="num">1</span>].<span class="fn">set_title</span>(<span class="str">'Fraud Rate by Type (%)'</span>)
+axes[<span class="num">1</span>, <span class="num">1</span>].<span class="fn">set_ylabel</span>(<span class="str">'Fraud %'</span>)
+
+<span class="cm"># Add a main title over all 4 charts</span>
+fig.<span class="fn">suptitle</span>(<span class="str">'M-Pesa Transaction Analysis Dashboard'</span>, fontsize=<span class="num">16</span>, y=<span class="num">1.02</span>)
+
+<span class="cm"># Automatically adjust spacing so charts don't overlap</span>
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+            </div>
+
+            <div class="card explain-card">
+                <div class="card-header" onclick="toggleCard(this)">💡 Here's what's going on under the hood — axes[row,
+                    col]</div>
+                <div class="card-body">
+                    When you create a 2x2 grid with <code>plt.subplots(2, 2)</code>, Python creates a grid of 4 "axes"
+                    objects — think of each one as a separate mini-chart container. You access each container using row
+                    and column numbers starting from 0:
+                    <ul style="margin-top:0.75rem;">
+                        <li><code>axes[0, 0]</code> = top-left chart</li>
+                        <li><code>axes[0, 1]</code> = top-right chart</li>
+                        <li><code>axes[1, 0]</code> = bottom-left chart</li>
+                        <li><code>axes[1, 1]</code> = bottom-right chart</li>
+                    </ul>
+                    Instead of calling <code>plt.bar()</code>, you call <code>axes[0, 0].bar()</code> — same function,
+                    but you're saying "draw this in that specific container".
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 10 — SAVING CHARTS ══════════════════════════════ -->
+        <section id="s9b">
+            <h2><span class="num">10.</span> Saving Your Charts as Image Files</h2>
+
+            <p>Once your chart looks good, you'll want to save it. Maybe for a report, a presentation, or a portfolio.
+            </p>
+
+            <div class="code-block">
+                <div class="code-label">🟡 Save a chart before plt.show()<button class="copy-btn"
+                        onclick="copyCode(this)">copy</button></div>
+                <pre><span class="cm"># Always call savefig() BEFORE show() — after show(), the figure is cleared</span>
+plt.<span class="fn">figure</span>(figsize=(<span class="num">10</span>, <span class="num">5</span>))
+plt.<span class="fn">bar</span>(type_counts.index, type_counts.values, color=<span class="str">'#3b82f6'</span>)
+plt.<span class="fn">title</span>(<span class="str">'Transaction Types'</span>)
+
+<span class="cm"># dpi = dots per inch — higher = better quality</span>
+<span class="cm"># bbox_inches='tight' = don't cut off labels</span>
+plt.<span class="fn">savefig</span>(<span class="str">'transaction_types.png'</span>, dpi=<span class="num">150</span>, bbox_inches=<span class="str">'tight'</span>)
+
+plt.<span class="fn">show</span>()
+
+<span class="fn">print</span>(<span class="str">"Chart saved!"</span>)</pre>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 11 — PRACTICE ══════════════════════════════ -->
+        <section id="s10">
+            <h2><span class="num">11.</span> Practice Tasks — Try These on Your Own</h2>
+
+            <p>You've covered all the core chart types. Now it's your turn to apply them. These tasks use the same
+                dataset and the same patterns — you're just combining things differently.</p>
+
+            <div class="steps-row">
+                <label class="step-chip"><input type="checkbox" /> Task 1</label>
+                <label class="step-chip"><input type="checkbox" /> Task 2</label>
+                <label class="step-chip"><input type="checkbox" /> Task 3</label>
+                <label class="step-chip"><input type="checkbox" /> Task 4</label>
+                <label class="step-chip"><input type="checkbox" /> Task 5</label>
+                <label class="step-chip"><input type="checkbox" /> Bonus</label>
+            </div>
+
+            <div class="practice">
+                <h4>🏋️ Task 1 — Bar chart of day-of-week activity</h4>
+                <ol>
+                    <li>Use <code>day_of_week</code> column (0=Mon, 6=Sun)</li>
+                    <li>Count transactions per day</li>
+                    <li>Plot a bar chart — is there more activity on weekdays or weekends?</li>
+                    <li>Hint: Add the day names as labels instead of numbers (use a list like
+                        <code>['Mon','Tue','Wed'...]</code>)</li>
+                </ol>
+            </div>
+
+            <div class="practice">
+                <h4>🏋️ Task 2 — Compare fraud vs normal amounts as two histograms</h4>
+                <ol>
+                    <li>Create two histograms on the same chart — one for normal transaction amounts, one for fraud
+                        amounts</li>
+                    <li>Use <code>alpha=0.6</code> on both so they show through each other</li>
+                    <li>Add a legend. What do you notice about the shape difference?</li>
+                </ol>
+            </div>
+
+            <div class="practice">
+                <h4>🏋️ Task 3 — Scatter plot: hour_of_day vs amount_kes</h4>
+                <ol>
+                    <li>Plot <code>hour_of_day</code> on the x-axis and <code>amount_kes</code> on the y-axis</li>
+                    <li>Colour fraud transactions red and normal ones blue (like we did in Section 06)</li>
+                    <li>What hours do large fraudulent transactions tend to happen?</li>
+                </ol>
+            </div>
+
+            <div class="practice">
+                <h4>🏋️ Task 4 — Line chart: average transaction amount by month</h4>
+                <ol>
+                    <li>Group by <code>month</code> and calculate the <strong>mean</strong> of <code>amount_kes</code>
+                        (not count this time — use <code>.mean()</code> instead of <code>.size()</code>)</li>
+                    <li>Plot as a line chart</li>
+                    <li>Does the average amount change over the year?</li>
+                </ol>
+            </div>
+
+            <div class="practice">
+                <h4>🏋️ Task 5 — Pie chart of is_large_tx</h4>
+                <ol>
+                    <li>The <code>is_large_tx</code> column marks unusually large transactions with a 1</li>
+                    <li>What percentage of all transactions are large?</li>
+                    <li>Create a pie chart showing large vs normal sized transactions</li>
+                </ol>
+            </div>
+
+            <div class="practice">
+                <h4>⭐ Bonus — Build a 3-panel fraud report</h4>
+                <ol>
+                    <li>Use <code>plt.subplots(1, 3)</code> to create 3 charts side by side</li>
+                    <li>Chart 1: Fraud by hour of day (bar)</li>
+                    <li>Chart 2: Fraud amount distribution (histogram)</li>
+                    <li>Chart 3: Fraud rate by transaction type (bar)</li>
+                    <li>Give it a main title and save it as <code>fraud_report.png</code></li>
+                    <li>This is a mini EDA (exploratory data analysis) report you'd actually show a stakeholder</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════ SECTION 12 — RECAP ══════════════════════════════ -->
+        <section id="s11">
+            <h2><span class="num">12.</span> How It All Fits Together</h2>
+
+            <p>Let's zoom out and look at what you've actually learned today — not just the syntax, but the
+                <em>thinking</em> behind it.</p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Chart Type</th>
+                        <th>Question it answers</th>
+                        <th>Key function</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bar chart</td>
+                        <td>How many in each category?</td>
+                        <td><code>plt.bar()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Histogram</td>
+                        <td>What's the shape of this number?</td>
+                        <td><code>plt.hist()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Pie chart</td>
+                        <td>What fraction of the whole?</td>
+                        <td><code>plt.pie()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Scatter plot</td>
+                        <td>Are two columns related?</td>
+                        <td><code>plt.scatter()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Line chart</td>
+                        <td>How does this change over time?</td>
+                        <td><code>plt.plot()</code></td>
+                    </tr>
+                    <tr>
+                        <td>Subplots</td>
+                        <td>Show multiple charts at once</td>
+                        <td><code>plt.subplots()</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout">
+                <strong>The bigger picture:</strong> Every chart you made today is part of what data scientists call
+                <strong>Exploratory Data Analysis (EDA)</strong>. EDA is the first step before any ML model. You
+                visualise the data to understand its shape, find patterns, spot outliers, and identify which features
+                might be useful for prediction. The fraud patterns you visualised today (night hours, large amounts,
+                high deviation) are exactly the kinds of signals a machine learning model would be trained to detect
+                automatically.
+            </div>
+
+            <h3>What comes next?</h3>
+            <ul>
+                <li><strong>Seaborn</strong> -- a library built on top of Matplotlib that makes statistical plots (like
+                    boxplots and heatmaps) much easier</li>
+                <li><strong>Pandas plotting</strong> -- <code>df.plot()</code> is a shortcut that calls Matplotlib under
+                    the hood, great for quick charts</li>
+                <li><strong>Feature engineering</strong> -- using your visual findings (fraud at night, deviation spike)
+                    to create new columns for an ML model</li>
+                <li><strong>Building a fraud detector</strong> -- once you understand the patterns visually, the next
+                    step is training an XGBoost or Logistic Regression model on these features</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <!-- ══════════════════════════════ FOOTER ══════════════════════════════ -->
+    <footer>
+        <strong>MLlabwithMel</strong> — Hands-on data &amp; AI education<br>
+        <span style="font-size:0.8rem; color:#475569; margin-top:0.4rem; display:block;">Built with real M-Pesa
+            transaction data. Charts aren't just pretty — they're how you think about data.</span>
+    </footer>
+
+    <script>
+        // ── Card toggle ──
+        function toggleCard(header) {
+            const card = header.closest('.card');
+            card.classList.toggle('open');
+        }
+
+        // ── Copy code ──
+        function copyCode(btn) {
+            const pre = btn.closest('.code-block').querySelector('pre');
+            const text = pre.innerText || pre.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'copied!';
+                setTimeout(() => btn.textContent = 'copy', 1800);
+            });
+        }
+
+        // ── Sticky nav highlight ──
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-step');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    const active = document.querySelector(`.nav-step[href="#${e.target.id}"]`);
+                    if (active) {
+                        active.classList.add('active');
+                        active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                }
+            });
+        }, { threshold: 0.3 });
+        sections.forEach(s => observer.observe(s));
+    </script>
+</body>
+
+</html>
